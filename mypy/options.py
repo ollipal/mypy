@@ -4,11 +4,16 @@ import pprint
 import re
 import sys
 import sysconfig
-from typing import Any, Callable, Final, Mapping, Pattern
+from typing import Any, Callable, Dict, Final, List, Mapping, Pattern, Tuple, Union
+from typing_extensions import TypeAlias
 
 from mypy import defaults
 from mypy.errorcodes import ErrorCode, error_codes
 from mypy.util import get_class_descriptors, replace_object_state
+
+ConfigValueType: TypeAlias = Union[
+    str, bool, int, float, Dict[str, str], List[str], Tuple[int, int]
+]
 
 
 class BuildType:
@@ -295,7 +300,7 @@ class Options:
         self.plugins: list[str] = []
 
         # Per-module options (raw)
-        self.per_module_options: dict[str, dict[str, object]] = {}
+        self.per_module_options: dict[str, dict[str, ConfigValueType]] = {}
         self._glob_options: list[tuple[str, Pattern[str]]] = []
         self.unused_configs: set[str] = set()
 
@@ -394,7 +399,7 @@ class Options:
     def new_semantic_analyzer(self) -> bool:
         return True
 
-    def snapshot(self) -> dict[str, object]:
+    def snapshot(self) -> dict[str, ConfigValueType]:
         """Produce a comparable snapshot of this Option"""
         # Under mypyc, we don't have a __dict__, so we need to do worse things.
         d = dict(getattr(self, "__dict__", ()))
@@ -408,7 +413,7 @@ class Options:
     def __repr__(self) -> str:
         return f"Options({pprint.pformat(self.snapshot())})"
 
-    def apply_changes(self, changes: dict[str, object]) -> Options:
+    def apply_changes(self, changes: dict[str, ConfigValueType]) -> Options:
         # Note: effects of this method *must* be idempotent.
         new_options = Options()
         # Under mypyc, we don't have a __dict__, so we need to do worse things.
@@ -435,7 +440,7 @@ class Options:
 
         return new_options
 
-    def compare_stable(self, other_snapshot: dict[str, object]) -> bool:
+    def compare_stable(self, other_snapshot: dict[str, ConfigValueType]) -> bool:
         """Compare options in a way that is stable for snapshot() -> apply_changes() roundtrip.
 
         This is needed because apply_changes() has non-trivial effects for some flags, so
