@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import pprint
 import re
 import sys
@@ -9,7 +10,7 @@ from typing_extensions import TypeAlias
 
 from mypy import defaults
 from mypy.errorcodes import ErrorCode, error_codes
-from mypy.util import get_class_descriptors, replace_object_state
+from mypy.util import compute_hash, get_class_descriptors, replace_object_state
 
 ConfigValueType: TypeAlias = Union[
     str, bool, int, float, Dict[str, str], List[str], Tuple[int, int]
@@ -71,6 +72,7 @@ OPTIONS_AFFECTING_CACHE: Final = (
         "plugins",
         "disable_bytearray_promotion",
         "disable_memoryview_promotion",
+        "per_module_options_hash",
     }
 ) - {"debug_cache"}
 
@@ -301,6 +303,7 @@ class Options:
 
         # Per-module options (raw)
         self.per_module_options: dict[str, dict[str, ConfigValueType]] = {}
+        self.per_module_options_hash: str = ""
         self._glob_options: list[tuple[str, Pattern[str]]] = []
         self.unused_configs: set[str] = set()
 
@@ -451,6 +454,11 @@ class Options:
             == Options().apply_changes(other_snapshot).snapshot()
         )
 
+    def calculate_per_module_options_hash(self) -> None:
+        self.per_module_options_hash = compute_hash(
+            json.dumps(self.per_module_options, separators=(",", ":"), sort_keys=True)
+        )
+
     def build_per_module_cache(self) -> None:
         self._per_module_cache = {}
 
@@ -500,6 +508,10 @@ class Options:
         NOTE: Once this method is called all Options objects should be
         considered read-only, else the caching might be incorrect.
         """
+        if len(self.per_module_options_hash) == 0:
+            self.calculate_per_module_options_hash()
+        assert len(self.per_module_options_hash) != 0
+
         if self._per_module_cache is None:
             self.build_per_module_cache()
         assert self._per_module_cache is not None
