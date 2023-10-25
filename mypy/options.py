@@ -5,7 +5,7 @@ import pprint
 import re
 import sys
 import sysconfig
-from typing import Any, Callable, Dict, Final, List, Mapping, Pattern, Tuple, Union
+from typing import Any, Callable, Dict, Final, List, Mapping, Pattern, Set, Tuple, Union
 from typing_extensions import TypeAlias
 
 from mypy import defaults
@@ -13,7 +13,7 @@ from mypy.errorcodes import ErrorCode, error_codes
 from mypy.util import compute_hash, get_class_descriptors, replace_object_state
 
 ConfigValueType: TypeAlias = Union[
-    str, bool, int, float, Dict[str, str], List[str], Tuple[int, int], None
+    str, bool, int, float, Dict[str, str], List[str], Tuple[int, int], None, Set[Any]
 ]
 
 
