@@ -19,9 +19,9 @@ from typing import Any, Callable, Final, Iterable, Mapping, MutableMapping, Sequ
 from typing_extensions import TypeAlias as _TypeAlias
 
 from mypy import defaults
-from mypy.options import PER_MODULE_OPTIONS, ConfigValueType, Options
+from mypy.options import PER_MODULE_OPTIONS, ConfigValue, Options
 
-_INI_PARSER_CALLABLE: _TypeAlias = Callable[[Any], ConfigValueType]
+_INI_PARSER_CALLABLE: _TypeAlias = Callable[[Any], ConfigValue]
 
 
 def parse_version(v: str | float) -> tuple[int, int]:
@@ -415,12 +415,12 @@ def parse_section(
     section: Mapping[str, Any],
     config_types: dict[str, _INI_PARSER_CALLABLE],
     stderr: TextIO = sys.stderr,
-) -> tuple[dict[str, ConfigValueType], dict[str, str]]:
+) -> tuple[dict[str, ConfigValue], dict[str, str]]:
     """Parse one section of a config file.
 
     Returns a dict of option values encountered, and a dict of report directories.
     """
-    results: dict[str, ConfigValueType] = {}
+    results: dict[str, ConfigValue] = {}
     report_dirs: dict[str, str] = {}
 
     # Because these fields exist on Options, without proactive checking, we would accept them
@@ -481,7 +481,7 @@ def parse_section(
                 else:
                     continue
             ct = type(dv)
-        v: ConfigValueType
+        v: ConfigValue
         try:
             if ct is bool:
                 if isinstance(section, dict):
@@ -581,7 +581,7 @@ def mypy_comments_to_config_map(line: str, template: Options) -> tuple[dict[str,
 
 def parse_mypy_comments(
     args: list[tuple[int, str]], template: Options
-) -> tuple[dict[str, ConfigValueType], list[tuple[int, str]]]:
+) -> tuple[dict[str, ConfigValue], list[tuple[int, str]]]:
     """Parse a collection of inline mypy: configuration comments.
 
     Returns a dictionary of options to be applied and a list of error messages
@@ -589,7 +589,7 @@ def parse_mypy_comments(
     """
 
     errors: list[tuple[int, str]] = []
-    sections: dict[str, ConfigValueType] = {}
+    sections: dict[str, ConfigValue] = {}
 
     for lineno, line in args:
         # In order to easily match the behavior for bools, we abuse configparser.
