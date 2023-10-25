@@ -5057,8 +5057,7 @@ tmp/a.py:2: error: Incompatible types in assignment (expression has type "int", 
 # flags: --config-file tmp/mypy.ini
 import m
 [file m.py]
-def foo():
-    pass
+pass
 [file mypy.ini]
 \[mypy]
 \[mypy-a]
@@ -5067,8 +5066,6 @@ warn_no_return = True
 \[mypy]
 \[mypy-a]
 warn_no_return = False
-[out]
-[out2]
 -- Every file should get reloaded, potentially contains changed modules
 [rechecked m, _typeshed, builtins, typing]
 
@@ -5076,16 +5073,13 @@ warn_no_return = False
 # flags: --config-file tmp/mypy.ini
 import m
 [file m.py]
-def foo():
-    pass
+pass
 [file mypy.ini]
 \[mypy]
 [file mypy.ini.2]
 \[mypy]
 \[mypy-a]
 warn_no_return = False
-[out]
-[out2]
 -- Every file should get reloaded, potentially contains changed modules
 [rechecked m, _typeshed, builtins, typing]
 
@@ -5093,16 +5087,13 @@ warn_no_return = False
 # flags: --config-file tmp/mypy.ini
 import m
 [file m.py]
-def foo():
-    pass
+pass
 [file mypy.ini]
 \[mypy]
 \[mypy-a]
 warn_no_return = True
 [file mypy.ini.2]
 \[mypy]
-[out]
-[out2]
 -- Every file should get reloaded, potentially contains changed modules
 [rechecked m, _typeshed, builtins, typing]
 
