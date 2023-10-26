@@ -14,6 +14,7 @@ from mypy.build import (
     BuildSource,
     State,
     build,
+    compute_hash,
     create_metastore,
     get_cache_names,
     sorted_components,
@@ -23,7 +24,7 @@ from mypy.fscache import FileSystemCache
 from mypy.nodes import MypyFile
 from mypy.options import Options
 from mypy.plugin import Plugin, ReportConfigContext
-from mypy.util import compute_hash, hash_digest
+from mypy.util import hash_digest
 from mypyc.codegen.cstring import c_string_initializer
 from mypyc.codegen.emit import Emitter, EmitterContext, HeaderDeclaration, c_array_initializer
 from mypyc.codegen.emitclass import generate_class, generate_class_type_decl
