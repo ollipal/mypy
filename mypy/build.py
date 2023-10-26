@@ -572,7 +572,7 @@ class BuildManager:
                        Plugins snapshot from previous incremental run (or None in
                        non-incremental mode and if cache was not found)
       old_per_module_options:
-                       per_module_options from previous run (or None if cache was not found)
+                       per_module_options from previous run (or empty dictionary if cache was not found)
       errors:          Used for reporting all errors
       flush_errors:    A function for processing errors after each SCC
       cache_enabled:   Whether cache is being read. This is set based on options,
@@ -1089,12 +1089,12 @@ def read_per_module_options_file(
         log_error="Could not load per_module_options file: ",
     )
     if per_module_options is None:
-        return None
+        return {}
     if not isinstance(per_module_options, dict):
         manager.log(
             f"Could not load per_module_options file: cache is not a dict: {type(per_module_options)}"
         )
-        return None
+        return {}
     return per_module_options
 
 
